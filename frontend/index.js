@@ -8,14 +8,18 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   // 🧠 Use Axios to GET learners and mentors.
   // ❗ Use the variables `mentors` and `learners` to store the data.
   // ❗ Use the await keyword when using axios.
-  const learnersData = await axios.get("http://localhost:3003/api/learners");
+  let mentors = [];
+  let learners = [];
+  try{
+    const learnersData = await axios.get("http://localhost:3003/api/learners");
   const mentorsList = await axios.get("http://localhost:3003/api/mentors");
-  console.log("learnersData", learnersData)
-  console.log("mentorsList", mentorsList)
-  let mentors = mentorsList.data
-  let learners = learnersData.data
-  console.log("mentors", mentors)
-  console.log("learners", learners)
+
+ 
+  mentors = mentorsList.data
+  learners = learnersData.data
+  } catch (error){console.log(error)}
+  
+  
 
  // - Endpoint A [GET] <http://localhost:3003/api/learners>
  // - Endpoint B [GET] <http://localhost:3003/api/mentors>
@@ -36,20 +40,22 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   //     "Grace Hopper"
   //   ]`
   // }
-  let combinedData = []
-  learners.forEach((learner) => {
-    const newLearner = {
-      ...learner, 
-      mentors: learner.mentors.map((id) => {
-        let mentor =  mentors.find((mentorObject) => id == mentorObject.id)
-        return mentor.firstName + " " + mentor.lastName
-      })
-    } 
-    combinedData.push(newLearner)
-  } 
 
-  )
-console.log(combinedData)
+let combinedData = []; // Change to an array
+learners.forEach((learner) => {
+  const newLearner = {
+    ...learner,
+    mentors: learner.mentors.map((id) => {
+      let mentor = mentors.find((mentorObject) => id === mentorObject.id);
+      return mentor ? mentor.firstName + " " + mentor.lastName : "Unknown Mentor"; // Handle case if mentor isn't found
+    }),
+  };
+  combinedData.push(newLearner); // Push directly without return
+});
+
+console.log(combinedData);
+
+
 //const found = array1.find((element) => element > 10);
 
 
@@ -63,7 +69,7 @@ console.log(combinedData)
 
   // 👇 ==================== TASK 3 START ==================== 👇
 
-  for (let learner of combinedData) { // looping over each learner object
+  for (let learner of learners) { // looping over each learner object
 
     // 🧠 Flesh out the elements that describe each learner
     // ❗ Give the elements below their (initial) classes, textContent and proper nesting.
@@ -78,25 +84,30 @@ console.log(combinedData)
     const mentorsHeading = document.createElement('h4')
     const mentorsList = document.createElement('ul')
 
-    learnerContainer = document.getElementById("learnerContainer");
-    learners.forEach(learner => {
-    const learnerDiv = document.createElement("div");
-    learnerDiv.className = learner.class;
-    learnerDiv.textContent = learner.name; 
+   card.classList.add('card');
+   heading.classList.add('learner-name');
+   email.classList.add('learner-email');
+   mentorsHeading.classList.add('closed');
+   mentorsList.classList.add('mentor-list');
 
-    const mentorList = document.createElement("ul");
+  heading.textContent = learner.fullname
+  email.textContent = learner.email
+  mentorsHeading.textContent = 'Mentors'
+  mentorsList.style.display = 'none'
 
-  
-      learner.mentors.forEach(mentor => {
-      const mentorItem = document.createElement("li");
-      mentorItem.textContent = mentor; 
-      mentorList.appendChild(mentorItem);
-  });
-      learnerDiv.appendChild(mentorList);
 
- 
-     learnerContainer.appendChild(learnerDiv);
-});
+   for (let mentorName of learner.mentors){
+    const mentorItem = document.createElement('li');
+    mentorItem.classlist.add('mentor-item');
+    mentorItem.textContent = mentorName
+    mentorsList.appendChild(mentorItem)
+   }
+
+   card.appendChild(heading);
+   card.appendChild(email);
+   card.appendChild(mentorsHeading);
+
+
 
     // 👆 ==================== TASK 3 END ====================== 👆
 
