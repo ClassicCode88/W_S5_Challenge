@@ -8,9 +8,17 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   // 🧠 Use Axios to GET learners and mentors.
   // ❗ Use the variables `mentors` and `learners` to store the data.
   // ❗ Use the await keyword when using axios.
+  const learnersData = await axios.get("http://localhost:3003/api/learners");
+  const mentorsList = await axios.get("http://localhost:3003/api/mentors");
+  console.log("learnersData", learnersData)
+  console.log("mentorsList", mentorsList)
+  let mentors = mentorsList.data
+  let learners = learnersData.data
+  console.log("mentors", mentors)
+  console.log("learners", learners)
 
-  let mentors = [] // fix this
-  let learners = [] // fix this
+ // - Endpoint A [GET] <http://localhost:3003/api/learners>
+ // - Endpoint B [GET] <http://localhost:3003/api/mentors>
 
   // 👆 ==================== TASK 1 END ====================== 👆
 
@@ -28,6 +36,23 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   //     "Grace Hopper"
   //   ]`
   // }
+  let combinedData = []
+  learners.forEach((learner) => {
+    const newLearner = {
+      ...learner, 
+      mentors: learner.mentors.map((id) => {
+        let mentor =  mentors.find((mentorObject) => id == mentorObject.id)
+        return mentor.firstName + " " + mentor.lastName
+      })
+    } 
+    combinedData.push(newLearner)
+  } 
+
+  )
+console.log(combinedData)
+//const found = array1.find((element) => element > 10);
+
+
 
   // 👆 ==================== TASK 2 END ====================== 👆
 
@@ -38,7 +63,7 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
 
   // 👇 ==================== TASK 3 START ==================== 👇
 
-  for (let learner of learners) { // looping over each learner object
+  for (let learner of combinedData) { // looping over each learner object
 
     // 🧠 Flesh out the elements that describe each learner
     // ❗ Give the elements below their (initial) classes, textContent and proper nesting.
@@ -52,6 +77,26 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
     const email = document.createElement('div')
     const mentorsHeading = document.createElement('h4')
     const mentorsList = document.createElement('ul')
+
+    learnerContainer = document.getElementById("learnerContainer");
+    learners.forEach(learner => {
+    const learnerDiv = document.createElement("div");
+    learnerDiv.className = learner.class;
+    learnerDiv.textContent = learner.name; 
+
+    const mentorList = document.createElement("ul");
+
+  
+      learner.mentors.forEach(mentor => {
+      const mentorItem = document.createElement("li");
+      mentorItem.textContent = mentor; 
+      mentorList.appendChild(mentorItem);
+  });
+      learnerDiv.appendChild(mentorList);
+
+ 
+     learnerContainer.appendChild(learnerDiv);
+});
 
     // 👆 ==================== TASK 3 END ====================== 👆
 
